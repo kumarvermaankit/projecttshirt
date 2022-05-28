@@ -4,38 +4,51 @@ import domtoimage from "dom-to-image-more";
 import "../styles/customize.css"
 import storage from "../fire_base"
 import tshirt from "../assets/background_tshirt.png"
-import { saveAs } from 'file-saver';
-import { uploadBytes,ref } from "firebase/storage";
+// import { saveAs } from 'file-saver';
+// import { uploadBytes,ref } from "firebase/storage";
+// import FontSizeChanger from 'react-font-size-changer';
+// import FontPicker from "font-picker-react"
+import { SketchPicker } from 'react-color'
+import ColorPicker from "../components/colorpicker"
+
+
+import { FabricJScanvas, useFabricJSEditor } from 'fabricjs-react'
 export default function Designer(){
 
 
-    const storageRef = ref(storage,"images/file")
+  // const storageRef = ref(storage,"images/file")
 
+    const { selectedObjects, editor, onReady } = useFabricJSEditor();
 
     const [design,setdesign] = useState(null)
     const [tshirtimg,settshirt] = useState(null)
+    const [fontvalue,setfontvalue] = useState(5)
+    const [currentcolor,setcurrentcolor] = useState("red")
+    // const [canvas,setcanvas] = useState(null)
     function saveImage(file){
-        const uploadtask = storage().ref(`images/${file.name}`).put(file)
-        
-        uploadtask.on(
-          "state_changed",
-          snapshot => { },
-          error => {
-            console.log(error)
-          },
-          () => {
-            storage()
-              .ref("images")
-              .child(file.name)
-              .getDownloadURL()
-              .then(imgurl => {
-                    console.log(imgurl)
-            })
-            })
+        const uploadtask = storage.storage().ref(`images/${"i1"}`).put(file)
+                uploadtask.on(
+                  "state_changed",
+                  snapshot => { },
+                  error => {
+                    console.log(error)
+                  },
+                  () => {
+                    storage.storage()
+                      .ref("images")
+                      .child("i1")
+                      .getDownloadURL()
+                      .then(imgurl => {
+                          console.log(imgurl)
+                      })
+
+                  })
     }
 
+let canvas = null
     useEffect(()=>{
-        let canvas = new fabric.Canvas('tshirt-canvas');
+      canvas = new fabric.Canvas('tshirt-canvas');
+        // setcanvas(canvas)
         // console.log(canvas)
         function updateTshirtImage(imageURL){
             fabric.Image.fromURL(imageURL, function(img) {                   
@@ -46,6 +59,11 @@ export default function Designer(){
                 canvas.renderAll();
             });
         }
+
+
+        // function updatetext()
+        
+        
         
         // Update the TShirt color according to the selected color by the user
         document.getElementById("tshirt-color").addEventListener("change", function(){
@@ -98,13 +116,127 @@ export default function Designer(){
             }
         }, false);
 
+
+        
     },[])
+
+   
+    // function addCustom(event){
+    //     let canvass = new fabric.canvass('tshirt-canvas');
+
+    //     var reader = new FileReader();
+            
+    //     reader.onload = function (event){
+    //         var imgObj = new Image();
+    //         imgObj.src = event.target.result;
+
+    //         // When the picture loads, create the image in Fabric.js
+    //         imgObj.onload = function () {
+    //             var img = new fabric.Image(imgObj);
+
+    //             img.scaleToHeight(150);
+    //             img.scaleToWidth(150); 
+    //             canvass.centerObject(img);
+    //             canvass.add(img);
+    //             canvass.renderAll();
+    //         };
+    //     };
+
+    //     // If the user selected a picture, load it
+    //     if(event.target.files[0]){
+    //         reader.readAsDataURL(event.target.files[0]);
+    //         setdesign(event.target.files[0]);
+    //     }
+    //     setcanvas(canvass)
+    // }
+
+    // console.log(canvas)
 
     function download(){
         domtoimage.toBlob(document.getElementById("tshirt-div")).then(function (blob) {
-            
+            saveImage(blob)
           });
     }
+
+    function Addtext(){
+
+        if(canvas !==null){
+
+        var text = new fabric.Textbox('Add Text', { left: 20, top: 100 ,fontFamily:"string"});
+        
+        canvas.add(text);
+        }
+    }
+
+    function incdecfont(state){
+
+        if(canvas !==null){
+
+        var object = canvas.getActiveObject()
+        var val = document.getElementById("font")
+
+        if(object !== undefined){
+
+        if(state === true){
+            object.fontSize = object.fontSize + 1
+           
+        }
+        else{
+            object.fontSize = object.fontSize - 1
+            
+
+        }
+        val.value = object.fontSize
+        canvas.add(object)
+        }
+    }
+    }
+
+    function changeFontSize(){
+
+        if(canvas !==null){
+
+        var val = document.getElementById("font").value
+       
+        var object = canvas.getActiveObject()
+        
+        object.fontSize = Number(val)
+        canvas.add(object)
+        }
+    }
+
+    
+    function changeFont(family){
+
+        if(canvas !==null){
+
+        var object = canvas.getActiveObject()
+        
+        if(object !== undefined){
+            object.fontFamily = family
+            // object.set("fontFamily","Macondo")
+            canvas.add(object)
+        }
+
+    }
+
+    }
+
+    function changeColor(color){
+        setcurrentcolor(color)
+      
+        if(canvas !== null){
+            var object = canvas.getActiveObject()
+            if(object !== undefined){
+                object.set({fill:color})
+                canvas.add(object)
+            }
+        }
+     
+
+    }
+
+
 
     return(
         <div>
@@ -143,9 +275,42 @@ export default function Designer(){
         <label for="tshirt-custompicture">Upload your own design:</label>
         <input type="file" id="tshirt-custompicture" />
         
-        <button onClick={download} >Download</button>
-
+        <button onClick={download}>Download</button>
+        <button onClick={Addtext}>Text</button>
+        <button>Shapes</button>
+        <button>Color Box</button>
+        <button>Stroke</button>
+        
+        {/* <FontSizeChanger
+          
+          onChange={(element, newValue, oldValue) => {
+            console.log(element, newValue, oldValue);
+          }}
+          options={{
+            stepSize: 2,
+            range: 3
+          }}
+          customButtons={{
+            up: <span style={{'fontSize': '36px'}}>A</span>,
+            down: <span style={{'fontSize': '20px'}}>A</span>,
+           
+            buttonsMargin: 10
+          }}          
+        /> */}
+        <button onClick={()=>incdecfont(true)}>+</button>
+        <input id="font" onChange={changeFontSize} />
+        <button onClick={()=>incdecfont(false)}>-</button>
+        {/* <FontPicker
+                    apiKey="AIzaSyDrXmeVCb65FyUs4cRGlpbf__MXMfNDC74"
+                    
+                    onChange={(nextFont) =>
+                        changeFont(nextFont.family)
+                    }
+                /> */}
+        <SketchPicker onChange={(color)=>changeColor(color.hex)} color={currentcolor}/>
+        {/* <ColorPicker /> */}
         </div>
+
     )    
     
 }

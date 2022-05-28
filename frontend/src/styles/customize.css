@@ -31,3 +31,8 @@
     user-select: none; 
     cursor: default;
 }
+
+.sample-canvas{
+    height:450px;
+    width:120%;
+}

@@ -29,8 +29,13 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
+    "font-picker-react": "^3.5.2",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.10.7"
+    "mongoose": "^5.10.7",
+    "react-color": "^2.19.3",
+    "react-color-picker": "^4.0.2",
+    "react-font-size-changer": "^0.2.0",
+    "tinycolor2": "^1.4.2"
   },
   "devDependencies": {
     "concurrently": "^5.3.0",

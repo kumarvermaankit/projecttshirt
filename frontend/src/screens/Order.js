@@ -5,7 +5,7 @@ import Message from '../components/Message'
 import Loader from '../components/Loader'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import { PayPalButton } from 'react-paypal-button-v2'
+// import { PayPalButton } from 'react-paypal-button-v2'
 import { ORDER_PAY_RESET } from '../constants/orderConstants'
 
 // Get order details actions
@@ -199,10 +199,11 @@ const Order = ({ match, history }) => {
                                     {!sdkReady ? (
                                         <Loader />
                                     ) : (
-                                        <PayPalButton
-                                            amount={order.totalPrice}
-                                            onSuccess={successPaymentHandler}
-                                        />
+                                        // <PayPalButton
+                                        //     amount={order.totalPrice}
+                                        //     onSuccess={successPaymentHandler}
+                                        // />
+                                        <p>Payment</p>
                                     )}
                                 </ListGroup.Item>
                             )}
